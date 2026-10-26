@@ -1,0 +1,44 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Register</h1>
+
+{% if errors %}
+    <ul>
+        {% for error in errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>First name</label>
+    <input type="text" name="first_name" maxlength="20"
+           value="{{ form_data.first_name|default:'' }}" required>
+
+    <label>Last name</label>
+    <input type="text" name="last_name" maxlength="20"
+           value="{{ form_data.last_name|default:'' }}" required>
+
+    <label>Middle name</label>
+    <input type="text" name="middle_name" maxlength="20"
+           value="{{ form_data.middle_name|default:'' }}">
+
+    <label>Email</label>
+    <input type="email" name="email" maxlength="100"
+           value="{{ form_data.email|default:'' }}" required>
+
+    <label>Password</label>
+    <input type="password" name="password" required>
+
+    <label>Confirm password</label>
+    <input type="password" name="password_confirm" required>
+
+    <button type="submit">Register</button>
+</form>
+
+<p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+{% endblock %}
