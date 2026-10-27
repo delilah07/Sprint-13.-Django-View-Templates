@@ -1,14 +1,81 @@
-{% extends "base.html" %} 
-{% block title %}Authors | Library{% endblock %} 
+
+{% extends "base.html" %}
+
+{% block title %}Authors | Library{% endblock %}
+
 {% block content %}
   <h2>Authors</h2>
 
+  <h3>Add a new author</h3>
+
+  {% if error %}
+    <p style="color: red;">{{ error }}</p>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="create">
+
+    <div>
+      <label for="name">First name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        maxlength="20"
+        required
+      >
+    </div>
+
+    <div>
+      <label for="surname">Surname:</label>
+      <input
+        type="text"
+        id="surname"
+        name="surname"
+        maxlength="20"
+        required
+      >
+    </div>
+
+    <div>
+      <label for="patronymic">Patronymic:</label>
+      <input
+        type="text"
+        id="patronymic"
+        name="patronymic"
+        maxlength="20"
+      >
+    </div>
+
+    <button type="submit">Add author</button>
+  </form>
+
+  <hr>
+
+  <h3>Authors list</h3>
+
   {% if authors %}
-  <ul>
-    {% for author in authors %}
-    <li>{{ author.name }} {{ author.surname }}</li>
-    {% endfor %}
-  </ul>
+    <ul>
+      {% for author in authors %}
+        <li>
+            {{ author.name }} {{ author.surname }}
+            {% if author.patronymic %}
+                {{ author.patronymic }}
+            {% endif %}
+
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                
+
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="author_id" value="{{ author.id }}">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+      {% endfor %}
+    </ul>
   {% else %}
-  <p>No authors found.</p>
-{% endif %} {% endblock %}
+    <p>No authors found.</p>
+  {% endif %}
+{% endblock %}
