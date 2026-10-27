@@ -1,8 +1,10 @@
 
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import PermissionDenied
 
 from .models import CustomUser
+from .decorators import librarian_required
 
 
 def register_view(request):
@@ -81,3 +83,19 @@ def logout_view(request):
         return redirect('home')
 
     return redirect('home')
+
+@librarian_required
+def user_list_view(request):
+    users = CustomUser.objects.all().order_by('last_name', 'first_name')
+
+    return render(request, 'authentication/user_list.html', {
+        'users': users,
+    })
+
+@librarian_required
+def user_detail_view(request, user_id):
+    selected_user = get_object_or_404(CustomUser, id=user_id)
+
+    return render(request, 'authentication/user_detail.html', {
+        'selected_user': selected_user,
+    })
