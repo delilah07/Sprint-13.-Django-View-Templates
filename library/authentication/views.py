@@ -7,6 +7,7 @@ from .models import CustomUser
 from .decorators import librarian_required
 
 
+
 def register_view(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
@@ -15,6 +16,7 @@ def register_view(request):
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
         password_confirm = request.POST.get('password_confirm', '')
+        role = request.POST.get('role', '0')
 
         errors = []
 
@@ -36,6 +38,9 @@ def register_view(request):
         if len(password) < 8:
             errors.append('Password must contain at least 8 characters.')
 
+        if role not in ('0', '1'):
+            errors.append('Please select a valid role.')
+
         if CustomUser.objects.filter(email__iexact=email).exists():
             errors.append('A user with this email already exists.')
 
@@ -51,7 +56,7 @@ def register_view(request):
             first_name=first_name,
             last_name=last_name,
             middle_name=middle_name,
-            role=0,
+            role=int(role),
         )
 
         return redirect('login')
