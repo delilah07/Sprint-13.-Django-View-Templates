@@ -46,10 +46,19 @@ def create_order(request, book_id):
     if order is None:
         messages.error(request, 'This book is currently unavailable.')
     else:
+        authors = ", ".join(
+            f"{author.name} {author.surname}"
+            for author in book.authors.all()
+        )
+
+        book_info = f'"{book.name}"'
+        if authors:
+            book_info += f" by {authors}"
+
         messages.success(
             request,
-            f'You successfully borrowed "{book}". '
-            f'Please return it by {planned_end_at:%Y-%m-%d}.'
+            f"You successfully borrowed {book_info}. "
+            f"Please return it by {planned_end_at:%Y-%m-%d}."
         )
 
     return redirect('order_list')
