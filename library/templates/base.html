@@ -20,6 +20,8 @@
             <a href="{% url 'author_list' %}">Authors</a>
             <a href="{% url 'user_list' %}">Users</a>
           {% endif %}
+          
+          <a href="{% url 'order_list' %}">Orders</a>
 
           <form method="post" action="{% url 'logout' %}" style="display: inline;">
               {% csrf_token %}
@@ -32,7 +34,16 @@
       </nav>
     </header>
 
-    <main>{% block content %} {% endblock %}</main>
+    
+    <main>
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
 
     <footer>
       <p>&copy; 2026 Library. All rights reserved.</p>

@@ -1,7 +1,9 @@
-from django.db import models, DataError
+from django.db import models, DataError, transaction
 
 from authentication.models import CustomUser
 from book.models import Book
+
+from django.utils import timezone
 
 
 class Order(models.Model):
@@ -68,22 +70,28 @@ class Order(models.Model):
                 """
         pass
 
+    
     @staticmethod
+    @transaction.atomic
     def create(user, book, plated_end_at):
-        orders = Order.objects.all()
-        books = set()
-        for order in orders:
-            if not order.end_at:
-                books.add(order.book.id)
-        if book.id in books and book.count == 1:
+        book = Book.objects.select_for_update().get(pk=book.pk)
+
+        if book.count <= 0:
             return None
+
         try:
-            order = Order(user=user, book=book, plated_end_at=plated_end_at)
-            order.save()
+            order = Order.objects.create(
+                user=user,
+                book=book,
+                plated_end_at=plated_end_at,
+            )
+
+            book.count -= 1
+            book.save(update_fields=['count'])
+
             return order
-        except ValueError:
-            return None
-        except DataError:
+
+        except (ValueError, DataError):
             return None
 
     @staticmethod

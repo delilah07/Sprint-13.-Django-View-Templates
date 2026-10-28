@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block title %}{{ selected_book.name }} | Library{% endblock %}
@@ -19,6 +18,23 @@
 {% empty %}
     <p>No authors assigned to this book.</p>
 {% endfor %}
+
+{% if user.is_authenticated %}
+    {% if selected_book.count > 0 %}
+        <form method="post" action="{% url 'create_order' selected_book.id %}">
+            {% csrf_token %}
+            <button type="submit">Borrow this book</button>
+        </form>
+    {% else %}
+        <p>This book is currently unavailable.</p>
+    {% endif %}
+{% else %}
+    <p>
+        <a href="{% url 'login' %}?next={{ request.path }}">
+            Log in to borrow this book
+        </a>
+    </p>
+{% endif %}
 
 <p><a href="{% url 'book_list' %}">Back to books</a></p>
 {% endblock %}
